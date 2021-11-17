@@ -1,14 +1,8 @@
-const a = {
-  name: 'abc',
-  greet: function () {
-    console.log('hi', this.name);
-  },
-};
+var fs = require('fs');
 
-// a.greet();
+var output = fs
+  .readFileSync('data.txt', 'utf-8')
+  .split('\n')
+  .map((line) => line.split('\t'));
 
-// const referenceFunc = a.greet;
-
-// referenceFunc.bind(a)();
-
-setTimeout(a.greet.bind(a), 1000);
+console.log('output', output);
