@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Filter, PersonForm, Persons } from './components';
+import { Filter, PersonForm, Persons, Notification } from './components';
 import personService from './services/persons';
 
 const App = () => {
@@ -7,6 +7,7 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newPhone, setNewPhone] = useState('');
   const [searchText, setSearchText] = useState('');
+  const [message, setMessage] = useState({ content: null, type: null });
 
   const handleNameChange = (e) => setNewName(e.target.value);
   const handlePhoneChange = (e) => setNewPhone(e.target.value);
@@ -35,6 +36,13 @@ const App = () => {
           setPersons([...persons, newPerson]);
           setNewName('');
           setNewPhone('');
+          setMessage({
+            content: `Added ${newPerson.name}`,
+            type: 'success',
+          });
+          setTimeout(() => {
+            setMessage({ content: null, type: null });
+          }, 3000);
         });
     }
   };
@@ -42,9 +50,30 @@ const App = () => {
   const updateNumber = (id) => {
     personService
       .updateNumber(id, { name: newName, number: newPhone })
-      .then((updatedPerson) =>
-        setPersons(persons.map((p) => (p.id !== id ? p : updatedPerson)))
-      );
+      .then((updatedPerson) => {
+        setPersons(persons.map((p) => (p.id !== id ? p : updatedPerson)));
+        setNewName('');
+        setNewPhone('');
+        setMessage({
+          content: `Phone number of ${updatedPerson.name} updated`,
+          type: 'success',
+        });
+        setTimeout(() => {
+          setMessage({ content: null, type: null });
+        }, 3000);
+      })
+      .catch((error) => {
+        setMessage({
+          content: `Information of ${newName} has already been removed from server`,
+          type: 'failure',
+        });
+        setTimeout(() => {
+          setMessage({ content: null, type: null });
+        }, 3000);
+        setNewName('');
+        setNewPhone('');
+        setPersons(persons.filter((p) => p.id !== id));
+      });
   };
 
   const deletePerson = (id) => {
@@ -63,6 +92,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Filter
         searchText={searchText}
         handleSearchTextChange={handleSearchTextChange}
