@@ -44,6 +44,16 @@ const App = () => {
           setTimeout(() => {
             setMessage({ content: null, type: null });
           }, 3000);
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+          setMessage({
+            content: error.response.data.error,
+            type: 'failure',
+          });
+          setTimeout(() => {
+            setMessage({ content: null, type: null });
+          }, 3000);
         });
     }
   };
