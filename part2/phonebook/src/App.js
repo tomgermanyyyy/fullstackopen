@@ -33,6 +33,7 @@ const App = () => {
       personService
         .addPerson({ name: newName, number: newPhone })
         .then((newPerson) => {
+          console.log('newPerson', newPerson);
           setPersons([...persons, newPerson]);
           setNewName('');
           setNewPhone('');
